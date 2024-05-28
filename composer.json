@@ -13,12 +13,17 @@
         "laravel/tinker": "^2.5"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^1.2",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
+        "laravel/pint": "^1.16",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^5.10",
-        "phpunit/phpunit": "^9.5.10"
+        "nunomaduro/phpinsights": "^2.11",
+        "phpunit/phpunit": "^9.5.10",
+        "rector/rector": "^1.1",
+        "symplify/easy-coding-standard": "^12.2"
     },
     "autoload": {
         "psr-4": {
@@ -55,7 +60,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

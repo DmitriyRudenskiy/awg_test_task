@@ -2,9 +2,9 @@
 
 namespace App\Services\Clients\CurrencyFromBank;
 
+use App\Services\CurrencyService;
 use ArrayIterator;
 use SimpleXMLElement;
-use App\Services\CurrencyService;
 
 class MapperCurrencyCentralBankRussia
 {
@@ -16,19 +16,17 @@ class MapperCurrencyCentralBankRussia
     {
         $result = [];
 
-        $content = mb_convert_encoding($content,  'windows-1251', 'utf-8');
+        $content = mb_convert_encoding($content, 'windows-1251', 'utf-8');
 
         $document = new SimpleXMLElement($content);
 
         foreach ($document as $value) {
-            $charCode = (string)$value->{self::INDEX_CHAR_CODE} ?? '';
+            $charCode = (string) $value->{self::INDEX_CHAR_CODE} ?? '';
 
-            if (empty($charCodes) || in_array($charCode, $charCodes)) {
+            if ($charCodes === [] || in_array($charCode, $charCodes)) {
+                $rawCurrencyValue = (string) $value->{self::INDEX_VALUE} ?? '';
 
-                $rawCurrencyValue = (string)$value->{self::INDEX_VALUE} ?? '';
-
-                $currencyValue = (int)(
-                    // TODO: петля вынести в интерфейс
+                $currencyValue = (int) (// TODO: петля вынести в интерфейс
                     CurrencyService::BASE_COEFFICIENT * round(
                         floatval(
                             str_replace(',', '.', $rawCurrencyValue)

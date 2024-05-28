@@ -14,9 +14,9 @@ class CentralBankRussiaClient implements CurrencyInterface
         $url = sprintf('%s/scripts/XML_daily.asp?date_req=%s', self::BASE_URL, $dateTime->format('d/m/Y'));
         $response = Http::get($url);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             // TODO: написать пользовательское исключение
-            throw new \RuntimeException('Error for url: ' . $url);
+            throw new \RuntimeException('Error for url: '.$url);
         }
 
         return $response->body();

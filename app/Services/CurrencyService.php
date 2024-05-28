@@ -6,22 +6,22 @@ use App\Models\Currency;
 use App\Models\CurrencyHistory;
 use App\Models\CurrencyValue;
 use App\Services\Clients\CurrencyFromBank\CentralBankRussiaClient;
-use DateTime;
 use App\Services\Clients\CurrencyFromBank\MapperCurrencyCentralBankRussia;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 
 class CurrencyService
 {
-    private const BASE_COEFFICIENT = 10000;
+    public const BASE_COEFFICIENT = 10000;
 
     /**
      * Запускам работу сервера
      */
-    public function sync(DateTime $datetime = null, array $listCurrency = []): bool
+    public function sync(?DateTime $datetime = null, array $listCurrency = []): bool
     {
-        if ($datetime === null) {
+        if (! $datetime instanceof \DateTime) {
             $datetime = new DateTime();
-            $datetime->setTime(0,0);
+            $datetime->setTime(0, 0);
         }
 
         if ($listCurrency === []) {
@@ -35,40 +35,10 @@ class CurrencyService
         }
 
         foreach ($currencyValues as $value) {
-            $this->addRecord( $datetime, $value['code'], $value['value']);
+            $this->addRecord($datetime, $value['code'], $value['value']);
         }
 
         return true;
-    }
-
-    protected function addRecord(DateTime $day, string $code, int $value): void
-    {
-        DB::transaction(function () use ($day, $code, $value) {
-            $currency = (new Currency())->where('char_code', $code)->firstOrFail();
-
-            $recordInHistory = (new CurrencyHistory())->where('currency_id', $currency->id)->orderBy('created_at')->first();
-
-            if ($recordInHistory === null || $recordInHistory->created_at !== $day->format('Y-m-d')) {
-                CurrencyHistory::create([
-                    'currency_id' =>$currency->id,
-                    'value' => $value,
-                    'created_at' => $day,
-                ]);
-            }
-
-            CurrencyValue::updateOrCreate(
-                ['currency_id' => $currency->id],
-                ['value' => $value, 'created_at' => $day]
-            );
-        });
-    }
-
-    /**
-     * Получаем клиент для работы с курсами валют
-     */
-    protected function getClient() : CentralBankRussiaClient
-    {
-        return new CentralBankRussiaClient();
     }
 
     /**
@@ -91,5 +61,35 @@ class CurrencyService
         $currency->value /= self::BASE_COEFFICIENT;
 
         return $currency;
+    }
+
+    protected function addRecord(DateTime $day, string $code, int $value): void
+    {
+        DB::transaction(function () use ($day, $code, $value) {
+            $currency = (new Currency())->where('char_code', $code)->firstOrFail();
+
+            $recordInHistory = (new CurrencyHistory())->where('currency_id', $currency->id)->orderBy('created_at')->first();
+
+            if ($recordInHistory === null || $recordInHistory->created_at !== $day->format('Y-m-d')) {
+                CurrencyHistory::create([
+                    'currency_id' => $currency->id,
+                    'value' => $value,
+                    'created_at' => $day,
+                ]);
+            }
+
+            CurrencyValue::updateOrCreate(
+                ['currency_id' => $currency->id],
+                ['value' => $value, 'created_at' => $day]
+            );
+        });
+    }
+
+    /**
+     * Получаем клиент для работы с курсами валют
+     */
+    protected function getClient(): CentralBankRussiaClient
+    {
+        return new CentralBankRussiaClient();
     }
 }

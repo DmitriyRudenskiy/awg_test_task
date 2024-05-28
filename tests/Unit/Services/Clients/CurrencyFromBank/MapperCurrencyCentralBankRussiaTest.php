@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Services\Clients\CurrencyFromBank;
 
-use PHPUnit\Framework\TestCase;
 use App\Services\Clients\CurrencyFromBank\MapperCurrencyCentralBankRussia;
-
+use PHPUnit\Framework\TestCase;
 
 class MapperCurrencyCentralBankRussiaTest extends TestCase
 {
@@ -12,11 +11,12 @@ class MapperCurrencyCentralBankRussiaTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->xml = file_get_contents(__DIR__ . '/fixture/XML_daily.xml');
+        $this->xml = file_get_contents(__DIR__.'/fixture/XML_daily.xml');
     }
 
     /**
      * @dataProvider provideCharCodesData
+     *
      * @run ./vendor/bin/phpunit --testsuite=Unit --filter testSimpleParseXml
      */
     public function testSimpleParseXml(int $count, array $charCodes): void

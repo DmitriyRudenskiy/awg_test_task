@@ -3,7 +3,6 @@
 namespace App\Services\Clients\CurrencyFromBank;
 
 use DateTime;
-use ArrayIterator;
 
 interface CurrencyInterface
 {
